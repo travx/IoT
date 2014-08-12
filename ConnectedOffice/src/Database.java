@@ -23,13 +23,16 @@ public class Database {
 	private String sSensorLast = "select * from sensor_last";
 	
 	private PreparedStatement psUserLast;
-	private String sUserLast = "insert into user_last(user_id, ip_address, user_ts, continent_name, country_name, region_name, city, postal_code, metro_code, area_code, latitude, longitude, organization) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private String sUserLast = "insert into user_last(user_id, ip_address, user_ts, continent_name, country_name, region_name, city, postal_code, metro_code, area_code, latitude, longitude, organization, latlon) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	private PreparedStatement psUserHist;
-	private String sUserHist = "insert into user_hist(user_id, ip_address, user_ts, continent_name, country_name, region_name, city, postal_code, metro_code, area_code, latitude, longitude, organization) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	private String sUserHist = "insert into user_hist(user_id, ip_address, user_ts, continent_name, country_name, region_name, city, postal_code, metro_code, area_code, latitude, longitude, organization, latlon) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	private PreparedStatement psUserLocHist;
-	private String sUserLocHist = "insert into user_loc_hist(user_id, user_ts, latitude, longitude) values(?, ?, ?, ?)";
+	private String sUserLocHist = "insert into user_loc_hist(user_id, user_ts, latitude, longitude, latlon) values(?, ?, ?, ?, ?)";
+	
+	private PreparedStatement psUserInfo;
+	private String sUserInfo = "insert into userinfo(user_id, latlon) values(?, ?)";
 	
 	
 	public String[] getNodes() {
@@ -98,12 +101,16 @@ public class Database {
 	
 	public void writeLocation(UserLocation userLoc){
 		if (psUserLast == null) psUserLast = session.prepare(sUserLast);
-		session.execute(psUserLast.bind(userLoc.getUser_id(), userLoc.getIp_address(), userLoc.getTimestamp(), userLoc.getContinent_name(), userLoc.getCountry_name(), userLoc.getRegion_name(), userLoc.getCity(), userLoc.getPostal_code(), userLoc.getMetro_code(), userLoc.getArea_code(), userLoc.getLatitude(), userLoc.getLongitude(), userLoc.getOrganization()));
+		session.execute(psUserLast.bind(userLoc.getUser_id(), userLoc.getIp_address(), userLoc.getTimestamp(), userLoc.getContinent_name(), userLoc.getCountry_name(), userLoc.getRegion_name(), userLoc.getCity(), userLoc.getPostal_code(), userLoc.getMetro_code(), userLoc.getArea_code(), userLoc.getLatitude(), userLoc.getLongitude(), userLoc.getOrganization(), userLoc.getLatlon()));
 		
 		if (psUserHist == null) psUserHist = session.prepare(sUserHist);
-		session.execute(psUserHist.bind(userLoc.getUser_id(), userLoc.getIp_address(), userLoc.getTimestamp(), userLoc.getContinent_name(), userLoc.getCountry_name(), userLoc.getRegion_name(), userLoc.getCity(), userLoc.getPostal_code(), userLoc.getMetro_code(), userLoc.getArea_code(), userLoc.getLatitude(), userLoc.getLongitude(), userLoc.getOrganization()));
+		session.execute(psUserHist.bind(userLoc.getUser_id(), userLoc.getIp_address(), userLoc.getTimestamp(), userLoc.getContinent_name(), userLoc.getCountry_name(), userLoc.getRegion_name(), userLoc.getCity(), userLoc.getPostal_code(), userLoc.getMetro_code(), userLoc.getArea_code(), userLoc.getLatitude(), userLoc.getLongitude(), userLoc.getOrganization(), userLoc.getLatlon()));
 
 		if (psUserLocHist == null) psUserLocHist = session.prepare(sUserLocHist);
-		session.execute(psUserLocHist.bind(userLoc.getUser_id(), userLoc.getTimestamp(), userLoc.getLatitude(), userLoc.getLongitude()));
+		session.execute(psUserLocHist.bind(userLoc.getUser_id(), userLoc.getTimestamp(), userLoc.getLatitude(), userLoc.getLongitude(), userLoc.getLatlon()));
+		
+		if (psUserInfo == null) psUserInfo = session.prepare(sUserInfo);
+		session.execute(psUserInfo.bind(userLoc.getUser_id(), userLoc.getLatlon()));
+
 	}
 }

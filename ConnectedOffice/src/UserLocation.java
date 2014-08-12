@@ -46,6 +46,10 @@ public class UserLocation {
 		this.setRegion_name(parseString(geolocation, "region_name"));
 	}
 	
+	public String getLatlon(){
+		return this.getLatitude() + "," + this.getLongitude();
+	}
+	
 	private String parseString(JsonObject json, String name){
 		try{
 			return json.get(name).getAsString();
